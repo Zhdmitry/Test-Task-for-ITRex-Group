@@ -1,0 +1,135 @@
+body{
+    margin: 0 auto;
+    background-color: cornsilk;
+}
+
+header{
+    display: flex;
+    justify-content: center;
+}
+
+main{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.buttons{
+    
+    margin-bottom: 25px;
+    display: flex;
+    font-size: 28px;
+    width: 720px;
+    justify-content: space-between
+}
+
+.search-button{
+display: flex;
+align-items: center;
+}
+
+.search-text{
+margin: 0;
+}
+
+.search{
+   margin: 0;
+   height: 28px;
+   margin-left:  10px;
+}
+
+.searchByState{
+    display: flex;
+
+}
+
+form{
+display: flex;
+
+text-align: center;
+}
+
+.state{
+    color: white;
+    display: flex;
+    border: 1px solid black;
+    border-radius: 5px;
+    background-color: blue;
+    text-align: center;
+}
+option{
+    color: black;
+    border: 1px solid black;
+    border-radius: 25px;
+    background-color: white;
+    text-align: center;
+}
+
+.table-wrapper{
+    display: flex;
+}
+
+table{
+    display: block;    
+    background-color: black;    
+}
+
+tr{
+    background-color: rgb(182, 211, 211);
+}
+
+.active{
+    background-color: rgb(230, 136, 201);
+}
+
+td{   
+    text-align: center;    
+}
+
+.th{   
+    min-width: 100px;
+    background-image: url('arrowUp.png');
+    background-size: 20px;
+    background-repeat: no-repeat;
+    background-position: right;    
+}
+
+.thReverse{   
+    min-width: 100px;
+    background-image: url('arrowDown.png');
+    background-size: 20px;
+    background-repeat: no-repeat;
+    background-position: right;    
+}
+
+
+.pages{
+    margin-top: 15px;
+    width: 700px;
+    display: flex;
+    justify-content: flex-end;    
+}
+
+.ButActive{
+    background-color: cadetblue;
+
+}
+
+
+.description{
+    margin-top: 25px;
+    border: 2px solid black;
+    width: 750px;
+    text-align: center;
+}
+
+
+footer{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin-top: 50px;
+}
+
+
+    
