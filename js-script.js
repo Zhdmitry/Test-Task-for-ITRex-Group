@@ -18,8 +18,8 @@ let pagesButtums = document.querySelector('.page-number')
 async function getData(){
     let response = await fetch(url); 
     let result = await response.json(); 
-    results = await result     
-    createtable(results)
+    results1 = await result     
+    createtable(results1)
     
 }
 
@@ -28,6 +28,8 @@ async function getData(){
  
 
 function createtable(results){
+    searchByName.value = ''
+    
     theadtr.innerHTML =''
     for(let key in results[0]){
         if(key == 'adress' ){
@@ -46,6 +48,7 @@ function createtable(results){
     search(results)
     filterByState(results)
     CreatePageButtums(results)
+    PagesListener(results)
 }
 
 
@@ -75,7 +78,7 @@ function sorted(arr, x){
     createTBody(arr)
     createDescriptions(arr)
     descListener()
-    CreatePageButtums(arr)
+    PagesListener(arr)
 }
 
 function sortedreverse(arr, x){
@@ -86,7 +89,7 @@ function sortedreverse(arr, x){
     createTBody(arr)
     createDescriptions(arr)
     descListener()
-    CreatePageButtums(arr)
+    PagesListener(arr)
 }
 
 
@@ -130,13 +133,21 @@ function sortListener(arr){
         }}))
 }
 
-function search(){
+function search(results){
+     
 searchByName.onchange = function(){    
     let substr = searchByName.value.toUpperCase()
     let arr = []
     if(substr == '' || substr == null || substr == undefined){
         let arr = results
-        createtable(arr)
+        createTBody (arr)
+    createDescriptions(arr)
+    descListener()
+    sortListener(arr)
+    
+    filterByState(arr)
+    CreatePageButtums(arr)
+    PagesListener(arr)
     }else{
         for(let i = 0; i < results.length; i++){
             let name = results[i].firstName.toUpperCase()
@@ -144,12 +155,19 @@ searchByName.onchange = function(){
                 arr.push(results[i])
             }
         }
-        createtable(arr)
+    createTBody (arr)
+    createDescriptions(arr)
+    descListener()
+    sortListener(arr)
+    
+    filterByState(arr)
+    CreatePageButtums(arr)
+    PagesListener(arr)
     }    
     } 
 }
 
-function filterByState(x){
+function filterByState(results){
     let state = document.querySelector('.state')
     let states = []
     for(let i = 0; i < results.length; i++){
@@ -160,12 +178,21 @@ function filterByState(x){
     for(let i = 0; i<states.length; i++){
         state.innerHTML = state.innerHTML + `<option value="${states[i]}">${states[i]}</option>`
     }
+
+    
     state.onchange = function(){
         let arr = []
         let stateItem = document.state.item.selectedIndex;
         if( stateItem == 1 ){
             let arr = results
-            createtable(arr)
+            createTBody (arr)
+    createDescriptions(arr)
+    descListener()
+    sortListener(arr)
+    search(arr)
+    
+    CreatePageButtums(arr)
+    PagesListener(arr)
 
             
         }else{
@@ -174,10 +201,18 @@ function filterByState(x){
                     arr.push(results[i])
                 }
             }
-            createtable(arr)
+            createTBody (arr)
+    createDescriptions(arr)
+    descListener()
+    sortListener(arr)
+    search(arr)
+    
+    CreatePageButtums(arr)
+    PagesListener(arr)
         }    
     }    
 }
+
 
 function CreatePageButtums(results){
     let valueofPages  = Math.ceil(results.length/20)
@@ -191,21 +226,54 @@ function CreatePageButtums(results){
         }        
     }
     let collection = document.querySelectorAll('.trow')
-     let buttoms = document.querySelectorAll('button')
+     
      let activeBut = document.querySelector('.ButActive')
         let index = activeBut.id
         let firstIndex = index*20-20
         let lastIndex = index*20
         collection.forEach(col => col.style = 'display: none')
-        for(let i = 0; i < collection.length; i++){
-             
+        for(let i = 0; i < collection.length; i++){             
             if(i >= firstIndex && i< lastIndex){
                 collection[i].style = 'display: table-row'
 
             }
-        }
-     buttoms.forEach(buttoms => buttoms.addEventListener('click', (e) => { 
+        }  
         
+    }
+
+    function PagesListener(results) {
+        
+        let valueofPages  = Math.ceil(results.length/20)
+    pagesButtums.innerHTML = ''
+    for(let i = 1; i<=valueofPages; i++){
+        if(i == 1){
+            pagesButtums.innerHTML = pagesButtums.innerHTML + `<button class="button ButActive B${i}" id="${i}" >${i}</button>`
+
+        }else{
+            pagesButtums.innerHTML = pagesButtums.innerHTML + `<button class="button B${i}" id="${i}">${i}</button>`
+        }        
+    }
+    let collection = document.querySelectorAll('.trow')
+     
+     let activeBut = document.querySelector('.ButActive')
+        let index = activeBut.id
+        let firstIndex = index*20-20
+        let lastIndex = index*20
+        collection.forEach(col => col.style = 'display: none')
+        for(let i = 0; i < collection.length; i++){             
+            if(i >= firstIndex && i< lastIndex){
+                collection[i].style = 'display: table-row'
+
+            }
+        }  
+        let buttoms = document.querySelectorAll('button')
+     buttoms.forEach(buttoms => buttoms.addEventListener('click', Listener ))
+    }
+        
+     
+    function Listener(e) { 
+        let collection = document.querySelectorAll('.trow')
+        let valueofPages  = Math.ceil(collection.length/20)
         if(e.target.classList.contains('button')){
             let buttoms = document.querySelectorAll('button')       
         buttoms.forEach(buttoms => buttoms.classList.remove('ButActive'))
@@ -213,10 +281,11 @@ function CreatePageButtums(results){
         }else{
             if(e.target.id == 'Prev'){
                 let buttoms = document.querySelectorAll('button')
-                if(buttoms.length > 3){
+                if(buttoms.length > 4){
                 let activeBut = document.querySelector('.ButActive')
                 let index = activeBut.id
-                let prevIndex = index -1
+                let prevIndex = index*1 -1
+                console.log(1)
                 if(index > 1){
                     activeBut.classList.remove('ButActive')
                     let prevBut = document.querySelector(`.B${prevIndex}`)
@@ -226,11 +295,12 @@ function CreatePageButtums(results){
             }else{
                 if(e.target.id == 'Next'){
                     let buttoms = document.querySelectorAll('button')
-                    if(buttoms.length > 3){
+                    console.log(buttoms.length)
+                    if(buttoms.length > 4){
                     
                     let activeBut = document.querySelector('.ButActive')
                     let index = activeBut.id
-                    let nextIndex = +index +1
+                    let nextIndex = index*1 +1
                     if(index <  valueofPages){
                         activeBut.classList.remove('ButActive')
                         let nextBut = document.querySelector(`.B${nextIndex}`)
@@ -254,9 +324,7 @@ function CreatePageButtums(results){
             }
         }
         
-        }))
-     
-
+        }
     
-}
+
 getData()
