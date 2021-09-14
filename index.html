@@ -16,12 +16,14 @@
         <div class="buttons">
             <div class="search-button">
                 <p class="search-text">search by name</p>
-                <input type="text" class="search">
+                <input type="text" class="search" onchange="search111()">
             </div>
+            <div class="reset" >
+                <button onclick="createtable(results1)">reset</button> </div>
             <div class="searchByState">
                <form name="state" action="" method="get" >
                    
-                   <select name="item" id="select" class="state">
+                   <select name="item" id="select" class="state" onchange="search111()">
                        <option value="0" >Filter by state</option>
                        
                    </select>

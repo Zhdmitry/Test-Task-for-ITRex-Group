@@ -7,9 +7,9 @@ let desc = document.querySelector('.description')
 let descriptions = []
 let searchByName = document.querySelector('.search')
 let state = document.querySelector('.state')
-let stateItem = document.state.item.selectedIndex;
-let pagesButtums = document.querySelector('.page-number')
 
+let pagesButtums = document.querySelector('.page-number')
+let th = document.querySelectorAll('.th')
 
 
 
@@ -18,8 +18,8 @@ let pagesButtums = document.querySelector('.page-number')
 async function getData(){
     let response = await fetch(url); 
     let result = await response.json(); 
-    results = await result     
-    createtable(results)
+    results1 = await result     
+    createtable(results1)
     
 }
 
@@ -28,6 +28,8 @@ async function getData(){
  
 
 function createtable(results){
+    searchByName.value = ''
+    
     theadtr.innerHTML =''
     for(let key in results[0]){
         if(key == 'adress' ){
@@ -43,9 +45,21 @@ function createtable(results){
     createDescriptions(results)
     descListener()
     sortListener(results)
-    search(results)
-    filterByState(results)
+    
+    
     CreatePageButtums(results)
+    PagesListener(results)
+    let state = document.querySelector('.state')
+    let states = []
+    for(let i = 0; i < results1.length; i++){
+        states.push(results1[i].adress.state)
+    }
+    states = Array.from(new Set(states))
+    state.innerHTML = `<option value="0" >Filter by state</option>` + `<option value="1">All STATES</option>`
+    for(let i = 0; i<states.length; i++){
+        state.innerHTML = state.innerHTML + `<option value="${states[i]}">${states[i]}</option>`
+    }
+    
 }
 
 
@@ -75,7 +89,7 @@ function sorted(arr, x){
     createTBody(arr)
     createDescriptions(arr)
     descListener()
-    CreatePageButtums(arr)
+    PagesListener(arr)
 }
 
 function sortedreverse(arr, x){
@@ -86,7 +100,7 @@ function sortedreverse(arr, x){
     createTBody(arr)
     createDescriptions(arr)
     descListener()
-    CreatePageButtums(arr)
+    PagesListener(arr)
 }
 
 
@@ -116,27 +130,48 @@ function descListener(){
         }))
     }
 
+
+
+    
 function sortListener(arr){
+    let z = document.querySelector('.theadtr')
+        z.innerHTML = z.innerHTML
     let th = document.querySelectorAll('.th')
-    th.forEach(th => th.addEventListener('click', (e) => {        
-        if(e.target.classList.contains('th')) {
-            th.classList.remove('th')
-            th.classList.add('thReverse')
-            sortedreverse(arr, th.innerHTML)            
-        } else {
-            th.classList.remove('thReverse')
-            th.classList.add('th')
-            sorted(arr, th.innerHTML)
-        }}))
+
+    function ff(e){
+        
+        if(e.target.classList.contains('th')){
+            e.target.classList.remove('th')
+            e.target.classList.add('thReverse')
+            sortedreverse(arr, e.target.innerHTML)
+        }else{
+            e.target.classList.remove('thReverse')
+            e.target.classList.add('th')
+            sorted(arr, e.target.innerHTML)
+        }
+    }
+    
+    th.forEach(th => th.addEventListener('click', ff))
 }
 
-function search(){
+
+
+
+function search(results){
+     
 searchByName.onchange = function(){    
     let substr = searchByName.value.toUpperCase()
     let arr = []
     if(substr == '' || substr == null || substr == undefined){
         let arr = results
-        createtable(arr)
+        createTBody (arr)
+    createDescriptions(arr)
+    descListener()
+    sortListener(arr)
+    
+
+    CreatePageButtums(arr)
+    PagesListener(arr)
     }else{
         for(let i = 0; i < results.length; i++){
             let name = results[i].firstName.toUpperCase()
@@ -144,40 +179,19 @@ searchByName.onchange = function(){
                 arr.push(results[i])
             }
         }
-        createtable(arr)
+    createTBody (arr)
+    createDescriptions(arr)
+    descListener()
+    sortListener(arr)
+    
+
+    CreatePageButtums(arr)
+    PagesListener(arr)
     }    
     } 
 }
 
-function filterByState(x){
-    let state = document.querySelector('.state')
-    let states = []
-    for(let i = 0; i < results.length; i++){
-        states.push(results[i].adress.state)
-    }
-    states = Array.from(new Set(states))
-    state.innerHTML = `<option value="0" >Filter by state</option>` + `<option value="1">All STATES</option>`
-    for(let i = 0; i<states.length; i++){
-        state.innerHTML = state.innerHTML + `<option value="${states[i]}">${states[i]}</option>`
-    }
-    state.onchange = function(){
-        let arr = []
-        let stateItem = document.state.item.selectedIndex;
-        if( stateItem == 1 ){
-            let arr = results
-            createtable(arr)
 
-            
-        }else{
-            for(let i = 0; i < results.length; i++){
-                if(results[i].adress.state == state.value){
-                    arr.push(results[i])
-                }
-            }
-            createtable(arr)
-        }    
-    }    
-}
 
 function CreatePageButtums(results){
     let valueofPages  = Math.ceil(results.length/20)
@@ -191,21 +205,54 @@ function CreatePageButtums(results){
         }        
     }
     let collection = document.querySelectorAll('.trow')
-     let buttoms = document.querySelectorAll('button')
+     
      let activeBut = document.querySelector('.ButActive')
         let index = activeBut.id
         let firstIndex = index*20-20
         let lastIndex = index*20
         collection.forEach(col => col.style = 'display: none')
-        for(let i = 0; i < collection.length; i++){
-             
+        for(let i = 0; i < collection.length; i++){             
             if(i >= firstIndex && i< lastIndex){
                 collection[i].style = 'display: table-row'
 
             }
-        }
-     buttoms.forEach(buttoms => buttoms.addEventListener('click', (e) => { 
+        }  
         
+    }
+
+    function PagesListener(results) {
+        
+        let valueofPages  = Math.ceil(results.length/20)
+    pagesButtums.innerHTML = ''
+    for(let i = 1; i<=valueofPages; i++){
+        if(i == 1){
+            pagesButtums.innerHTML = pagesButtums.innerHTML + `<button class="button ButActive B${i}" id="${i}" >${i}</button>`
+
+        }else{
+            pagesButtums.innerHTML = pagesButtums.innerHTML + `<button class="button B${i}" id="${i}">${i}</button>`
+        }        
+    }
+    let collection = document.querySelectorAll('.trow')
+     
+     let activeBut = document.querySelector('.ButActive')
+        let index = activeBut.id
+        let firstIndex = index*20-20
+        let lastIndex = index*20
+        collection.forEach(col => col.style = 'display: none')
+        for(let i = 0; i < collection.length; i++){             
+            if(i >= firstIndex && i< lastIndex){
+                collection[i].style = 'display: table-row'
+
+            }
+        }  
+        let buttoms = document.querySelectorAll('button')
+     buttoms.forEach(buttoms => buttoms.addEventListener('click', Listener ))
+    }
+        
+     
+    function Listener(e) { 
+        let collection = document.querySelectorAll('.trow')
+        let valueofPages  = Math.ceil(collection.length/20)
         if(e.target.classList.contains('button')){
             let buttoms = document.querySelectorAll('button')       
         buttoms.forEach(buttoms => buttoms.classList.remove('ButActive'))
@@ -213,10 +260,11 @@ function CreatePageButtums(results){
         }else{
             if(e.target.id == 'Prev'){
                 let buttoms = document.querySelectorAll('button')
-                if(buttoms.length > 3){
+                if(buttoms.length > 4){
                 let activeBut = document.querySelector('.ButActive')
                 let index = activeBut.id
-                let prevIndex = index -1
+                let prevIndex = index*1 -1
+                console.log(1)
                 if(index > 1){
                     activeBut.classList.remove('ButActive')
                     let prevBut = document.querySelector(`.B${prevIndex}`)
@@ -226,11 +274,12 @@ function CreatePageButtums(results){
             }else{
                 if(e.target.id == 'Next'){
                     let buttoms = document.querySelectorAll('button')
-                    if(buttoms.length > 3){
+                    console.log(buttoms.length)
+                    if(buttoms.length > 4){
                     
                     let activeBut = document.querySelector('.ButActive')
                     let index = activeBut.id
-                    let nextIndex = +index +1
+                    let nextIndex = index*1 +1
                     if(index <  valueofPages){
                         activeBut.classList.remove('ButActive')
                         let nextBut = document.querySelector(`.B${nextIndex}`)
@@ -254,9 +303,153 @@ function CreatePageButtums(results){
             }
         }
         
-        }))
-     
+        }
+
+    function search111(){
+        let substr = searchByName.value.toUpperCase()
+        console.log(substr)
+        let stateItem = document.state.item.selectedIndex;
+        if(substr == '' && (stateItem == 0 || stateItem == 1)){
+            let state = document.querySelector('.state')
+            let states = []
+            for(let i = 0; i < results1.length; i++){
+                states.push(results1[i].adress.state)
+            }
+            states = Array.from(new Set(states))
+            state.innerHTML = `<option value="0" >Filter by state</option>` + `<option value="1">All STATES</option>`
+            for(let i = 0; i<states.length; i++){
+                state.innerHTML = state.innerHTML + `<option value="${states[i]}">${states[i]}</option>`
+            }            
+            createTBody (results1)
+            createDescriptions(results1)
+            descListener()            
+            sortListener(results1)            
+            CreatePageButtums(results1)
+            PagesListener(results1)
+        }
+        if(substr == '' && (stateItem !== 0 && stateItem !== 1)){
+            let arr = []
+            for(let i = 0; i < results1.length; i++){
+                if(results1[i].adress.state == state.value){
+                    arr.push(results1[i])
+                }
+            }
+            createTBody (arr)
+            createDescriptions(arr)
+            descListener()    
+            sortListener(arr)    
+            CreatePageButtums(arr)
+            PagesListener(arr)
+        }
+
+        if(substr !== '' && (stateItem !== 0 && stateItem !== 1)){
+            let arr = []
+            let arr1 = []
+            for(let i = 0; i < results1.length; i++){
+                if(results1[i].adress.state == state.value){
+                    arr.push(results1[i])
+                }
+            }
+            for(let i = 0; i < arr.length; i++){
+                let name = arr[i].firstName.toUpperCase()
+                if(name.includes(substr)){
+                    arr1.push(arr[i])
+                }
+            }
+
+            
+
+            
+            createTBody (arr1)
+            createDescriptions(arr1)
+            descListener()    
+            sortListener(arr1)    
+            CreatePageButtums(arr1)
+            PagesListener(arr1)
+        }
+
+        if(substr !== '' && (stateItem == 0 || stateItem == 1)){
+            let arr = []
+            for(let i = 0; i < results1.length; i++){
+                let name = results1[i].firstName.toUpperCase()
+                if(name.includes(substr)){
+                    arr.push(results1[i])
+                }
+            }
+            
+            let state = document.querySelector('.state')
+            let states = []
+            for(let i = 0; i < arr.length; i++){
+                states.push(arr[i].adress.state)
+            }
+            states = Array.from(new Set(states))
+            state.innerHTML = `<option value="0" >Filter by state</option>` + `<option value="1">All STATES</option>`
+            for(let i = 0; i<states.length; i++){
+                state.innerHTML = state.innerHTML + `<option value="${states[i]}">${states[i]}</option>`
+            }
+
+            createTBody (arr)
+            createDescriptions(arr)
+            descListener()            
+            sortListener(arr)            
+            CreatePageButtums(arr)
+            PagesListener(arr)
+        }
+
+
+
+
+        
+
+
 
     
+    }
+    
+/*function filterByState(results){
+    let state = document.querySelector('.state')
+    let states = []
+    for(let i = 0; i < results.length; i++){
+        states.push(results[i].adress.state)
+    }
+    states = Array.from(new Set(states))
+    state.innerHTML = `<option value="0" >Filter by state</option>` + `<option value="1">All STATES</option>`
+    for(let i = 0; i<states.length; i++){
+        state.innerHTML = state.innerHTML + `<option value="${states[i]}">${states[i]}</option>`
+    }
+
+    
+    state.onchange = function(){
+        let arr = []
+        let stateItem = document.state.item.selectedIndex;
+        if( stateItem == 1 ){
+            let arr = results
+            createTBody (arr)
+    createDescriptions(arr)
+    descListener()
+    sortListener(arr)
+    
+    
+    CreatePageButtums(arr)
+    PagesListener(arr)
+
+            
+        }else{
+            for(let i = 0; i < results.length; i++){
+                if(results[i].adress.state == state.value){
+                    arr.push(results[i])
+                }
+            }
+            createTBody (arr)
+    createDescriptions(arr)
+    descListener()
+    sortListener(arr)
+    
+    
+    CreatePageButtums(arr)
+    PagesListener(arr)
+        }    
+    }    
 }
+*/
 getData()
